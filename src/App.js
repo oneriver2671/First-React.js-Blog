@@ -13,8 +13,10 @@ function App() {
   // state를 변경하려면, 함께 만들어진 changeLikeNum() 함수를 써야만 변경 가능
   let [likeNum, changeLikeNum] = useState(0);
 
+  // 
+  let [modal, setModal] = useState(false);
+
   function 제목바꾸기() {
-    
   }
 
   return (
@@ -22,7 +24,7 @@ function App() {
     // html대신 굳이 왜 이렇게 쓰냐? 리앵뷰의 장점 -> 데이터 바인딩이 쉽게 되기 때문 ★
     <div className="App">
       <div className='black-nav'>
-        <div>개발 Blog</div>
+        <div>한강 Blog</div>
       </div>
 
       {/**함수 뒤에 () 붙이면, click 하기 전에 바로 실행되어버림. */}
@@ -79,12 +81,30 @@ function App() {
         <hr/>
       </div>
       <div className='list'>
-        <h3> { titles[3] } </h3>
+        {/**TODO: true면 false, false면 true 넣기 */}
+        <h3 onClick={ ()=>{ setModal(true) } }> { titles[3] } </h3>
         <p>7월 27일 발행</p>
         <hr/>
       </div>
+
+      {/**6강. 모달 컴포넌트 */}
+      {
+        modal == true ? <Modal/> : null      // html 중간에 조건문 쓰려면, 삼항연산자 사용 추천 (다른 깔끔한 방법도 있나? v-if 같은.)
+      }
     </div> 
   );
 }
+
+// 다른 함수 바깥에 만들어야 함, 컴포넌트 함수는 대문자.
+// (참고1) 의미없는 <div>로 한번 감싸줘야 할 땐, 그냥 <> 이렇게 쓰면 됨. (fragment 문법)
+function Modal() {
+  return (
+    <div className='modal'>
+      <h4>제목</h4>
+      <p>날짜</p>
+      <p>상세내용</p>
+    </div>
+  )
+} 
 
 export default App;
