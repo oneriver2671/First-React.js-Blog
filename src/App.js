@@ -1,16 +1,14 @@
 
 import React, { useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 function App() {
 
-  let posts = 'state말고 변수에 저장';
-
+  let posts = ['우리집에 왜 왔니', '컬처닷컴이 최고다', '스벨트도 해보고 싶다', '조성진도 좋고 임윤찬도 좋다'];
 
   // ES6 destructuring 문법을 사용한 state 저장
   let [글제목1, 글제목변경] = useState('임윤찬이 최고의 연주자인 이유');   // [a,b]: b에 state 데이터를 변경할 수 있는 함수가 들어감
-  let [title, changeTitle] = useState(['배열1 제목', '배열2 제목']);    // array/object 다룰 땐, 원본은 보존하는 게 좋음 (영구적으로 수정x)
+  let [titles, changeTitles] = useState(posts);  
 
   // state를 변경하려면, 함께 만들어진 changeLikeNum() 함수를 써야만 변경 가능
   let [likeNum, changeLikeNum] = useState(0);
@@ -28,34 +26,61 @@ function App() {
       </div>
 
       {/**함수 뒤에 () 붙이면, click 하기 전에 바로 실행되어버림. */}
-      <button onClick={ 제목바꾸기 }>글제목 변경 버튼</button>
+      <button onClick={ 제목바꾸기 }>제목바꾸기 함수 버튼</button>
       <button onClick={() => {
-        let copy = [...title];		// 뭐냐 이 그지같은 문법은..? => 동작원리: state변경함수는, 기존 state와 신규 state를 비교 후, 같으면 변경 안해줌
-				// array/object 특징: []
+        // copy 변수 생성 이유: array/object 등을 다룰 땐, 원본은 보존하는 게 좋음 (영구적으로 수정x)
+        // state변경함수의 동작원리: 기존 state와 신규 state를 비교 후, 같으면 변경 안해줌 (일종의 에너지 절약)
+        let copy = [...titles];	        // js의 배열 복사 문법 (참조가 바뀜. 새로운 배열.)
         copy[0] = '배열1 제목 변경';
-        copy[1] = '배열2 제목 변경';
-        changeTitle(copy);
-      }}>아아아</button>
+        changeTitles(copy);
+
+        /* 안되는 코드 (js array 특징) */
+        // let arrReference = titles;      // MDN문서: 이렇게 쓰면 배열 복사 안됨. 원본 배열을 가리키는 '참조'만 할당됨.
+        // arrReference[0] = '배열1 제목 변경';    // 그래서 이렇게 값을 변경 후 state변경함수를 적용하는 게 불가능. arrReference의 화살표는 변하지 않았기 때문.
+        // changeTitles(arrReference);
+
+      }}>제목 수정 버튼</button>
+
+      {/**문자열 정렬 (오름차순) */}
+      <button onClick={() => {
+        let ascArr = [...posts];   // titles도 되고, posts도 되네?
+        ascArr.sort();
+        changeTitles(ascArr);
+      }}>글제목 오름차순 정렬</button>
+
+      {/**문자열 정렬 (내림차순) */}
+      <button onClick={() => {
+        let descArr = [...titles]; 
+        descArr.sort();
+        descArr.reverse();
+        changeTitles(descArr);
+      }}>글제목 내림차순 정렬</button>
+
 
       {/**글 목록 */}
-      <div className='list'>
-        <h3> { posts } </h3>
-        <p>7월 25일 발행</p>
-        <hr/> 
-      </div>
       <div className='list'>
         <h3> { 글제목1 } <span>👍</span> { likeNum } </h3>
         <p>7월 25일 발행</p>
         <hr/>
       </div>
       <div className='list'>
-        <h3> { title[0] } <span onClick={ ()=>{ changeLikeNum(likeNum+1) } }>👍</span> { likeNum } </h3>
+        <h3> { titles[0] } <span onClick={ ()=>{ changeLikeNum(likeNum+1) } }>👍</span> { likeNum } </h3>
         <p>7월 25일 발행</p>
         <hr/>
       </div>
       <div className='list'>
-        <h3> { title[1] } </h3>
+        <h3> { titles[1] } </h3>
         <p>7월 25일 발행</p>
+        <hr/>
+      </div>
+      <div className='list'>
+        <h3> { titles[2] } </h3>
+        <p>7월 26일 발행</p>
+        <hr/>
+      </div>
+      <div className='list'>
+        <h3> { titles[3] } </h3>
+        <p>7월 27일 발행</p>
         <hr/>
       </div>
     </div> 
