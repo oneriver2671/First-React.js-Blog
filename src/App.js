@@ -4,17 +4,34 @@ import './App.css';
 
 function App() {
 
-  let posts = ['우리집에 왜 왔니', '컬처닷컴이 최고다', '스벨트도 해보고 싶다', '조성진도 좋고 임윤찬도 좋다'];
+  let posts = ['우리집에 왜 왔니', '손민수 교수님 최고...', '스벨트도 해보고 싶다', '조성진도 좋고 임윤찬도 좋다'];
+
+  // 이거 못써먹나? 객체 배열의 form을 이렇게 강제하고 싶은데.
+  let postObj = {
+    title: String,
+    likeNum: Number
+  };
+
+  // 좋아요 상태관리를 위한 객체배열 시도
+  let postArr = [];
+  postArr.push({title: '우리집에 왜 왔니', likeNum: 0});
+  postArr.push({title: '손민수 교수님 최고', likeNum: 0});
+  postArr.push({title: '스벨트도 해보고 싶다', likeNum: 0});
+  postArr.push({title: '백엔드? 프론트엔드? 고민됨', likeNum: 0});
+  
 
   // ES6 destructuring 문법을 사용한 state 저장
   let [글제목1, 글제목변경] = useState('임윤찬이 최고의 연주자인 이유');   // [a,b]: b에 state 데이터를 변경할 수 있는 함수가 들어감
-  let [titles, changeTitles] = useState(posts);  
+  let [titles, setTitles] = useState(posts);  
 
-  // state를 변경하려면, 함께 만들어진 changeLikeNum() 함수를 써야만 변경 가능
-  let [likeNum, changeLikeNum] = useState(0);
+  // state를 변경하려면, 함께 만들어진 setLikeNum() 함수를 써야만 변경 가능
+  let [likeNum, setLikeNum] = useState(0);
 
-  // 
-  let [modal, setModal] = useState(false);
+  // modal창 
+  let [modal, setModal] = useState(false);   
+
+  // 좋아요 상태관리
+  let [likePosts, setLikePosts] = useState(postArr);
 
   function 제목바꾸기() {
   }
@@ -34,12 +51,12 @@ function App() {
         // state변경함수의 동작원리: 기존 state와 신규 state를 비교 후, 같으면 변경 안해줌 (일종의 에너지 절약)
         let copy = [...titles];	        // js의 배열 복사 문법 (참조가 바뀜. 새로운 배열.)
         copy[0] = '배열1 제목 변경';
-        changeTitles(copy);
+        setTitles(copy);
 
         /* 안되는 코드 (js array 특징) */
         // let arrReference = titles;      // MDN문서: 이렇게 쓰면 배열 복사 안됨. 원본 배열을 가리키는 '참조'만 할당됨.
         // arrReference[0] = '배열1 제목 변경';    // 그래서 이렇게 값을 변경 후 state변경함수를 적용하는 게 불가능. arrReference의 화살표는 변하지 않았기 때문.
-        // changeTitles(arrReference);
+        // setTitles(arrReference);
 
       }}>제목 수정 버튼</button>
 
@@ -47,7 +64,7 @@ function App() {
       <button onClick={() => {
         let ascArr = [...posts];   // titles도 되고, posts도 되네?
         ascArr.sort();
-        changeTitles(ascArr);
+        setTitles(ascArr);
       }}>글제목 오름차순 정렬</button>
 
       {/**문자열 정렬 (내림차순) */}
@@ -55,7 +72,7 @@ function App() {
         let descArr = [...titles]; 
         descArr.sort();
         descArr.reverse();
-        changeTitles(descArr);
+        setTitles(descArr);
       }}>글제목 내림차순 정렬</button>
 
 
@@ -66,7 +83,7 @@ function App() {
         <hr/>
       </div>
       <div className='list'>
-        <h3> { titles[0] } <span onClick={ ()=>{ changeLikeNum(likeNum+1) } }>👍</span> { likeNum } </h3>
+        <h3> { titles[0] } <span onClick={ ()=>{ setLikeNum(likeNum+1) } }>👍</span> { likeNum } </h3>
         <p>7월 25일 발행</p>
         <hr/>
       </div>
@@ -81,15 +98,32 @@ function App() {
         <hr/>
       </div>
       <div className='list'>
-        {/**TODO: true면 false, false면 true 넣기 */}
-        <h3 onClick={ ()=>{ setModal(true) } }> { titles[3] } </h3>
-        <p>7월 27일 발행</p>
+        {/**모달 컴포넌트 열고/닫기 */}
+        <h3 onClick={ ()=>{ 
+          let isModalOpened = modal == false ? true : false;
+          setModal(isModalOpened); 
+          } }> { titles[3] } </h3>
+        <p>modal창 열고 닫기</p>
         <hr/>
       </div>
 
-      {/**6강. 모달 컴포넌트 */}
       {
-        modal == true ? <Modal/> : null      // html 중간에 조건문 쓰려면, 삼항연산자 사용 추천 (다른 깔끔한 방법도 있나? v-if 같은.)
+        // React에서 반복문 (Vue에선 v-for)
+        likePosts.map(function(likePost, index) {
+          return (
+            <div className='list' key={index}>
+              <h3> { likePost.title } <span onClick={ ()=>{ setLikePosts(likePost.likeNum+1) } }>👍</span> { likePost.likeNum } </h3>  
+              <p>{ index+1 }번</p>
+              <hr/>
+            </div>
+          )
+        })
+      }
+
+
+      {
+        // 모달 컴포넌트
+        modal == true ? <Modal></Modal> : null      // html 중간에 조건문 쓰려면, 삼항연산자 사용 추천 (다른 깔끔한 방법도 있나? v-if 같은.)
       }
     </div> 
   );
