@@ -5,20 +5,7 @@ import './App.css';
 function App() {
 
   let posts = ['우리집에 왜 왔니', '손민수 교수님 최고...', '스벨트도 해보고 싶다', '조성진도 좋고 임윤찬도 좋다'];
-
-  // 이거 못써먹나? 객체 배열의 form을 이렇게 강제하고 싶은데.
-  let postObj = {
-    title: String,
-    likeNum: Number
-  };
-
-  // 좋아요 상태관리를 위한 객체배열 시도
-  let postArr = [];
-  postArr.push({title: '우리집에 왜 왔니', likeNum: 0});
-  postArr.push({title: '손민수 교수님 최고', likeNum: 0});
-  postArr.push({title: '스벨트도 해보고 싶다', likeNum: 0});
-  postArr.push({title: '백엔드? 프론트엔드? 고민됨', likeNum: 0});
-  
+  let _likeNums = [0, 0, 0, 0];
 
   // ES6 destructuring 문법을 사용한 state 저장
   let [글제목1, 글제목변경] = useState('임윤찬이 최고의 연주자인 이유');   // [a,b]: b에 state 데이터를 변경할 수 있는 함수가 들어감
@@ -31,7 +18,7 @@ function App() {
   let [modal, setModal] = useState(false);   
 
   // 좋아요 상태관리
-  let [likePosts, setLikePosts] = useState(postArr);
+  let [likeNums, setLikeNums] = useState(_likeNums);
 
   function 제목바꾸기() {
   }
@@ -108,12 +95,16 @@ function App() {
       </div>
 
       {
-        // React에서 반복문 (Vue에선 v-for)
-        likePosts.map(function(likePost, index) {
+        // React에서 반복문
+        titles.map(function(title, i) {
           return (
-            <div className='list' key={index}>
-              <h3> { likePost.title } <span onClick={ ()=>{ setLikePosts(likePost.likeNum+1) } }>👍</span> { likePost.likeNum } </h3>  
-              <p>{ index+1 }번</p>
+            <div className='list' key={i}>
+              <h3> { title } <span onClick={ ()=>{ 
+                let newLikeNums = [...likeNums];
+                newLikeNums[i] = newLikeNums[i] + 1;
+                setLikeNums(newLikeNums);  
+                } }>👍</span> { likeNums[i] } </h3>  
+              <p>{ i+1 }번</p>
               <hr/>
             </div>
           )
