@@ -99,7 +99,11 @@ function App() {
         titles.map(function(title, i) {
           return (
             <div className='list' key={i}>
-              <h3> { title } <span onClick={ ()=>{ 
+              <h3 onClick={ ()=>{ 
+                let isModalOpened = modal == false ? true : false;
+                setModal(isModalOpened);
+               } }> { title } 
+              <span onClick={ ()=>{ 
                 let newLikeNums = [...likeNums];
                 newLikeNums[i] = newLikeNums[i] + 1;
                 setLikeNums(newLikeNums);  
@@ -111,10 +115,9 @@ function App() {
         })
       }
 
-
       {
-        // 모달 컴포넌트
-        modal == true ? <Modal></Modal> : null      // html 중간에 조건문 쓰려면, 삼항연산자 사용 추천 (다른 깔끔한 방법도 있나? v-if 같은.)
+        // 모달 컴포넌트 (props 전송)
+        modal == true ? <Modal color={'skyblue'} titles={titles} setTitles={setTitles}></Modal> : null      // html 중간에 조건문 쓰려면, 삼항연산자 사용 추천 (다른 깔끔한 방법도 있나? v-if 같은.)
       }
     </div> 
   );
@@ -122,14 +125,26 @@ function App() {
 
 // 다른 함수 바깥에 만들어야 함, 컴포넌트 함수는 대문자.
 // (참고1) 의미없는 <div>로 한번 감싸줘야 할 땐, 그냥 <> 이렇게 쓰면 됨. (fragment 문법)
-function Modal() {
+
+// 모달 컴포넌트
+function Modal(props){
+
+  // html
   return (
-    <div className='modal'>
-      <h4>제목</h4>
+    <div className='modal' style={ {background: props.color} }>
+      <h4> { props.titles[0] } </h4>
       <p>날짜</p>
       <p>상세내용</p>
+      <button onClick={ modifyTitle }>글 수정</button>
     </div>
   )
+
+  // 글 수정 함수
+  function modifyTitle(){
+    let newTitles = [...props.titles];
+    newTitles[0] = '수정된 글1';
+    props.setTitles(newTitles);
+  }
 } 
 
 export default App;
