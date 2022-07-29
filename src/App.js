@@ -10,29 +10,25 @@ function App() {
   // ES6 destructuring 문법을 사용한 state 저장
   let [글제목1, 글제목변경] = useState('임윤찬이 최고의 연주자인 이유');   // [a,b]: b에 state 데이터를 변경할 수 있는 함수가 들어감
   let [titles, setTitles] = useState(posts);  
+  let [inputText, setInputText] = useState('');
 
   // state를 변경하려면, 함께 만들어진 setLikeNum() 함수를 써야만 변경 가능
   let [likeNum, setLikeNum] = useState(0);
 
   // modal창 
   let [modal, setModal] = useState(false);   
+  let [titleIndex, setTitleIndex] = useState(0);    // 이걸 또 따로 만들어줘야 되는게 불편하네.
 
   // 좋아요 상태관리
   let [likeNums, setLikeNums] = useState(_likeNums);
 
-  function 제목바꾸기() {
-  }
-
   return (
-    // JSX문법 사용. js이기 때문에, class라고 쓸 수 없음. 대신 className.
-    // html대신 굳이 왜 이렇게 쓰냐? 리앵뷰의 장점 -> 데이터 바인딩이 쉽게 되기 때문 ★
+   
     <div className="App">
       <div className='black-nav'>
         <div>한강 Blog</div>
       </div>
 
-      {/**함수 뒤에 () 붙이면, click 하기 전에 바로 실행되어버림. */}
-      <button onClick={ 제목바꾸기 }>제목바꾸기 함수 버튼</button>
       <button onClick={() => {
         // copy 변수 생성 이유: array/object 등을 다룰 땐, 원본은 보존하는 게 좋음 (영구적으로 수정x)
         // state변경함수의 동작원리: 기존 state와 신규 state를 비교 후, 같으면 변경 안해줌 (일종의 에너지 절약)
@@ -62,7 +58,23 @@ function App() {
         setTitles(descArr);
       }}>글제목 내림차순 정렬</button>
 
+      <div>
+        <input onChange={(e)=>{ 
+          setInputText(e.target.value);   // (참고) state변경함수는 늦게 처리됨 => 비동기처리
+          }}></input> 
+        <button onClick={()=>{
+          // inputText state가 titles 배열 state에 추가
+          let newTitles = [...titles];
+          newTitles.push(inputText);
+          setTitles(newTitles);
 
+          // 좋아요 state에 추가
+          let newLikeNums = [...likeNums];
+          newLikeNums.push(0);
+          setLikeNums(newLikeNums);
+        }}>글 추가</button>
+      </div>
+      
       {/**글 목록 */}
       <div className='list'>
         <h3> { 글제목1 } <span>👍</span> { likeNum } </h3>
@@ -102,12 +114,21 @@ function App() {
               <h3 onClick={ ()=>{ 
                 let isModalOpened = modal == false ? true : false;
                 setModal(isModalOpened);
-               } }> { title } 
-              <span onClick={ ()=>{ 
-                let newLikeNums = [...likeNums];
-                newLikeNums[i] = newLikeNums[i] + 1;
-                setLikeNums(newLikeNums);  
-                } }>👍</span> { likeNums[i] } </h3>  
+                setTitleIndex(i);
+               } }>
+                { title } 
+
+                {/**좋아요 기능 */}
+                <span onClick={ (e)=>{ 
+                  e.stopPropagation();  // 이벤트 버블링 막는 코드 (모달창 안열리게)
+
+                  let newLikeNums = [...likeNums];
+                  newLikeNums[i] = newLikeNums[i] + 1;
+                  setLikeNums(newLikeNums);  
+                  } }>👍
+                </span> 
+                { likeNums[i] } 
+              </h3>  
               <p>{ i+1 }번</p>
               <hr/>
             </div>
@@ -117,7 +138,7 @@ function App() {
 
       {
         // 모달 컴포넌트 (props 전송)
-        modal == true ? <Modal color={'skyblue'} titles={titles} setTitles={setTitles}></Modal> : null      // html 중간에 조건문 쓰려면, 삼항연산자 사용 추천 (다른 깔끔한 방법도 있나? v-if 같은.)
+        modal == true ? <Modal color={'skyblue'} titles={titles} setTitles={setTitles} titleIndex={titleIndex}></Modal> : null      // html 중간에 조건문 쓰려면, 삼항연산자 사용 추천 (다른 깔끔한 방법도 있나? v-if 같은.)
       }
     </div> 
   );
@@ -132,7 +153,7 @@ function Modal(props){
   // html
   return (
     <div className='modal' style={ {background: props.color} }>
-      <h4> { props.titles[0] } </h4>
+      <h4> { props.titles[props.titleIndex] } </h4>
       <p>날짜</p>
       <p>상세내용</p>
       <button onClick={ modifyTitle }>글 수정</button>
