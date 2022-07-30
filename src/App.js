@@ -75,42 +75,12 @@ function App() {
         }}>글 추가</button>
       </div>
       
-      {/**글 목록 */}
-      <div className='list'>
-        <h3> { 글제목1 } <span>👍</span> { likeNum } </h3>
-        <p>7월 25일 발행</p>
-        <hr/>
-      </div>
-      <div className='list'>
-        <h3> { titles[0] } <span onClick={ ()=>{ setLikeNum(likeNum+1) } }>👍</span> { likeNum } </h3>
-        <p>7월 25일 발행</p>
-        <hr/>
-      </div>
-      <div className='list'>
-        <h3> { titles[1] } </h3>
-        <p>7월 25일 발행</p>
-        <hr/>
-      </div>
-      <div className='list'>
-        <h3> { titles[2] } </h3>
-        <p>7월 26일 발행</p>
-        <hr/>
-      </div>
-      <div className='list'>
-        {/**모달 컴포넌트 열고/닫기 */}
-        <h3 onClick={ ()=>{ 
-          let isModalOpened = modal == false ? true : false;
-          setModal(isModalOpened); 
-          } }> { titles[3] } </h3>
-        <p>modal창 열고 닫기</p>
-        <hr/>
-      </div>
-
       {
         // React에서 반복문
         titles.map(function(title, i) {
           return (
             <div className='list' key={i}>
+              {/**모달 컴포넌트 열고/닫기 */}
               <h3 onClick={ ()=>{ 
                 let isModalOpened = modal == false ? true : false;
                 setModal(isModalOpened);
@@ -130,6 +100,14 @@ function App() {
                 { likeNums[i] } 
               </h3>  
               <p>{ i+1 }번</p>
+              <button onClick={()=>{
+                let newTitles = [...titles];
+                let newLikeNums = [...likeNums];
+                newTitles.splice(i, 1);
+                newLikeNums.splice(i, 1);
+                setTitles(newTitles);
+                setLikeNums(newLikeNums);
+              }}>삭제</button>
               <hr/>
             </div>
           )
@@ -144,7 +122,7 @@ function App() {
   );
 }
 
-// 다른 함수 바깥에 만들어야 함, 컴포넌트 함수는 대문자.
+// 컴포넌트 작성 시, 다른 함수 바깥에 만들어야 함. 컴포넌트 함수는 대문자.
 // (참고1) 의미없는 <div>로 한번 감싸줘야 할 땐, 그냥 <> 이렇게 쓰면 됨. (fragment 문법)
 
 // 모달 컴포넌트
